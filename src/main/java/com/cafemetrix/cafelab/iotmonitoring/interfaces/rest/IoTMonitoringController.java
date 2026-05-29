@@ -30,6 +30,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+@CrossOrigin(origins = "*")
 @RestController
 @RequestMapping(value = "/api/v1/iot-monitoring", produces = MediaType.APPLICATION_JSON_VALUE)
 @Tag(name = "IoT Monitoring", description = "Endpoints de monitoreo IoT por usuario autenticado")
