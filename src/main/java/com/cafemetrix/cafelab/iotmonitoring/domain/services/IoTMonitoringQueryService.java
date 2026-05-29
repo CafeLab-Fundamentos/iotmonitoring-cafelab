@@ -3,6 +3,7 @@ package com.cafemetrix.cafelab.iotmonitoring.domain.services;
 import com.cafemetrix.cafelab.iotmonitoring.domain.model.aggregates.IoTMonitoringData;
 import com.cafemetrix.cafelab.iotmonitoring.domain.model.aggregates.IoTMonitoringHistory;
 import com.cafemetrix.cafelab.iotmonitoring.domain.model.queries.GetIoTMonitoringDataByUserIdQuery;
+import com.cafemetrix.cafelab.iotmonitoring.domain.model.queries.GetIoTMonitoringHistoriesByBatchIdQuery;
 import com.cafemetrix.cafelab.iotmonitoring.domain.model.queries.GetIoTMonitoringHistoriesByUserIdQuery;
 import com.cafemetrix.cafelab.iotmonitoring.domain.model.queries.GetLatestIoTMonitoringHistoryByUserIdQuery;
 
@@ -15,4 +16,6 @@ public interface IoTMonitoringQueryService {
     List<IoTMonitoringHistory> handle(GetIoTMonitoringHistoriesByUserIdQuery query);
 
     Optional<IoTMonitoringHistory> handle(GetLatestIoTMonitoringHistoryByUserIdQuery query);
+
+    List<IoTMonitoringHistory> handle(GetIoTMonitoringHistoriesByBatchIdQuery query);
 }

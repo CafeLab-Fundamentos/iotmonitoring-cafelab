@@ -8,6 +8,7 @@ public record IoTMonitoringHistoryResource(
         double temperature,
         double humidity,
         Long iotMonitoringDataId,
-        LocalDateTime timestamp
+        LocalDateTime timestamp,
+        Long batchId
 ) {
 }

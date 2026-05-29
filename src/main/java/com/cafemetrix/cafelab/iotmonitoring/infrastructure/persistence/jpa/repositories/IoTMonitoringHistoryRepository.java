@@ -14,4 +14,6 @@ public interface IoTMonitoringHistoryRepository extends JpaRepository<IoTMonitor
     List<IoTMonitoringHistory> findByIotMonitoringData_UserIdOrderByTimestampDesc(UserId userId, Pageable pageable);
 
     Optional<IoTMonitoringHistory> findFirstByIotMonitoringData_UserIdOrderByTimestampDesc(UserId userId);
+
+    List<IoTMonitoringHistory> findByBatchIdOrderByTimestampAsc(Long batchId);
 }

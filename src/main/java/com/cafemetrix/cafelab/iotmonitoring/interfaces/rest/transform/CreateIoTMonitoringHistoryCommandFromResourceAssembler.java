@@ -12,6 +12,7 @@ public class CreateIoTMonitoringHistoryCommandFromResourceAssembler {
                 resource.connectionState(),
                 resource.temperature(),
                 resource.humidity(),
-                resource.timestamp());
+                resource.timestamp(),
+                resource.batchId());
     }
 }

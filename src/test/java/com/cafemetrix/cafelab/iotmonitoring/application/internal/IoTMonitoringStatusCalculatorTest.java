@@ -72,7 +72,7 @@ class IoTMonitoringStatusCalculatorTest {
 
     private IoTMonitoringHistory createHistory(double t, double h) {
         return new IoTMonitoringHistory(new CreateIoTMonitoringHistoryCommand(
-                1L, true, t, h, null
+                1L, true, t, h, null, null
         ), null);
     }
 }

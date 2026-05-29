@@ -8,6 +8,7 @@ public record CreateIoTMonitoringHistoryResource(
         @NotNull Boolean connectionState,
         @NotNull Double temperature,
         @NotNull Double humidity,
-        LocalDateTime timestamp
+        LocalDateTime timestamp,
+        @NotNull Long batchId
 ) {
 }

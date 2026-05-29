@@ -3,6 +3,7 @@ package com.cafemetrix.cafelab.iotmonitoring.application.internal.queryservices;
 import com.cafemetrix.cafelab.iotmonitoring.domain.model.aggregates.IoTMonitoringData;
 import com.cafemetrix.cafelab.iotmonitoring.domain.model.aggregates.IoTMonitoringHistory;
 import com.cafemetrix.cafelab.iotmonitoring.domain.model.queries.GetIoTMonitoringDataByUserIdQuery;
+import com.cafemetrix.cafelab.iotmonitoring.domain.model.queries.GetIoTMonitoringHistoriesByBatchIdQuery;
 import com.cafemetrix.cafelab.iotmonitoring.domain.model.queries.GetIoTMonitoringHistoriesByUserIdQuery;
 import com.cafemetrix.cafelab.iotmonitoring.domain.model.queries.GetLatestIoTMonitoringHistoryByUserIdQuery;
 import com.cafemetrix.cafelab.iotmonitoring.domain.services.IoTMonitoringQueryService;
@@ -36,12 +37,17 @@ public class IoTMonitoringQueryServiceImpl implements IoTMonitoringQueryService 
     public List<IoTMonitoringHistory> handle(GetIoTMonitoringHistoriesByUserIdQuery query) {
         int safeLimit = Math.max(1, Math.min(query.limit(), 100));
         return historyRepository.findByIotMonitoringData_UserIdOrderByTimestampDesc(
-                new UserId(query.userId()),
-                PageRequest.of(0, safeLimit));
+                 new UserId(query.userId()),
+                 PageRequest.of(0, safeLimit));
     }
 
     @Override
     public Optional<IoTMonitoringHistory> handle(GetLatestIoTMonitoringHistoryByUserIdQuery query) {
         return historyRepository.findFirstByIotMonitoringData_UserIdOrderByTimestampDesc(new UserId(query.userId()));
+    }
+
+    @Override
+    public List<IoTMonitoringHistory> handle(GetIoTMonitoringHistoriesByBatchIdQuery query) {
+        return historyRepository.findByBatchIdOrderByTimestampAsc(query.batchId());
     }
 }

@@ -66,7 +66,7 @@ public class IoTMonitoringCommandServiceImpl implements IoTMonitoringCommandServ
 
     @Override
     @Transactional
-    public Optional<IoTMonitoringHistory> simulateReading(Long userId) {
+    public Optional<IoTMonitoringHistory> simulateReading(Long userId, Long batchId) {
         Optional<IoTMonitoringData> dataOpt = dataRepository.findByUserId(new UserId(userId));
         if (dataOpt.isEmpty()) {
             return Optional.empty();
@@ -81,7 +81,8 @@ public class IoTMonitoringCommandServiceImpl implements IoTMonitoringCommandServ
                         data.isSensorConnected(),
                         temperature,
                         humidity,
-                        LocalDateTime.now());
+                        LocalDateTime.now(),
+                        batchId);
         return handle(command);
     }
 

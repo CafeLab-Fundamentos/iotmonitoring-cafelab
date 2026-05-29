@@ -38,7 +38,7 @@ class IoTMonitoringHistoryRepositoryTest {
         dataRepository.save(data);
 
         CreateIoTMonitoringHistoryCommand historyCommand = new CreateIoTMonitoringHistoryCommand(
-                userId.userId(), true, 22.5, 55.0, LocalDateTime.now()
+                userId.userId(), true, 22.5, 55.0, LocalDateTime.now(), 1L
         );
         IoTMonitoringHistory history = new IoTMonitoringHistory(historyCommand, data);
         historyRepository.save(history);
@@ -50,5 +50,35 @@ class IoTMonitoringHistoryRepositoryTest {
         assertTrue(latest.isPresent());
         assertEquals(22.5, latest.get().getTemperature());
         assertEquals(userId.userId(), latest.get().getIotMonitoringData().getUserId().userId());
+    }
+
+    @Test
+    void shouldSaveAndFindHistoryByBatchId() {
+        // Arrange
+        UserId userId = new UserId(200L);
+        CreateIoTMonitoringDataCommand dataCommand = new CreateIoTMonitoringDataCommand(
+                userId.userId(), true, true, 18.0, 24.0, 50.0, 65.0
+        );
+        IoTMonitoringData data = new IoTMonitoringData(dataCommand);
+        dataRepository.save(data);
+
+        Long batchId = 42L;
+        CreateIoTMonitoringHistoryCommand historyCommand1 = new CreateIoTMonitoringHistoryCommand(
+                userId.userId(), true, 22.5, 55.0, LocalDateTime.now().minusMinutes(5), batchId
+        );
+        CreateIoTMonitoringHistoryCommand historyCommand2 = new CreateIoTMonitoringHistoryCommand(
+                userId.userId(), true, 23.0, 56.0, LocalDateTime.now(), batchId
+        );
+        historyRepository.save(new IoTMonitoringHistory(historyCommand1, data));
+        historyRepository.save(new IoTMonitoringHistory(historyCommand2, data));
+
+        // Act
+        var batchHistory = historyRepository.findByBatchIdOrderByTimestampAsc(batchId);
+
+        // Assert
+        assertEquals(2, batchHistory.size());
+        assertEquals(22.5, batchHistory.get(0).getTemperature());
+        assertEquals(23.0, batchHistory.get(1).getTemperature());
+        assertEquals(batchId, batchHistory.get(0).getBatchId());
     }
 }

@@ -11,6 +11,7 @@ public class IoTMonitoringHistoryResourceFromEntityAssembler {
                 entity.getTemperature(),
                 entity.getHumidity(),
                 entity.getIotMonitoringData().getId(),
-                entity.getTimestamp());
+                entity.getTimestamp(),
+                entity.getBatchId());
     }
 }

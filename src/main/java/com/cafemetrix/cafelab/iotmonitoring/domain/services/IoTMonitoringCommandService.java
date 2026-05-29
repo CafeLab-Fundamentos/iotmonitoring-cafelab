@@ -16,5 +16,5 @@ public interface IoTMonitoringCommandService {
     Optional<IoTMonitoringHistory> handle(CreateIoTMonitoringHistoryCommand command);
 
     /** Genera temperatura y humedad en servidor, persiste historial y devuelve la lectura guardada. */
-    Optional<IoTMonitoringHistory> simulateReading(Long userId);
+    Optional<IoTMonitoringHistory> simulateReading(Long userId, Long batchId);
 }

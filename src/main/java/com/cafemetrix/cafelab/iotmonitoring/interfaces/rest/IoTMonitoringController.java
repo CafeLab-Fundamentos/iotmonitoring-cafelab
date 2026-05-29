@@ -7,6 +7,7 @@ import com.cafemetrix.cafelab.iotmonitoring.domain.model.aggregates.IoTMonitorin
 import com.cafemetrix.cafelab.iotmonitoring.domain.model.aggregates.IoTMonitoringHistory;
 import com.cafemetrix.cafelab.iotmonitoring.domain.model.commands.CreateIoTMonitoringDataCommand;
 import com.cafemetrix.cafelab.iotmonitoring.domain.model.queries.GetIoTMonitoringDataByUserIdQuery;
+import com.cafemetrix.cafelab.iotmonitoring.domain.model.queries.GetIoTMonitoringHistoriesByBatchIdQuery;
 import com.cafemetrix.cafelab.iotmonitoring.domain.model.queries.GetIoTMonitoringHistoriesByUserIdQuery;
 import com.cafemetrix.cafelab.iotmonitoring.domain.model.queries.GetLatestIoTMonitoringHistoryByUserIdQuery;
 import com.cafemetrix.cafelab.iotmonitoring.domain.services.IoTMonitoringCommandService;
@@ -186,16 +187,30 @@ public class IoTMonitoringController {
         return ResponseEntity.ok(resources);
     }
 
+    @GetMapping("/histories/batch/{batchId}")
+    @Operation(summary = "Listar historial IoT de un lote específico")
+    public ResponseEntity<?> listHistoriesByBatch(@PathVariable Long batchId) {
+        Optional<Long> userIdOpt = resolveCurrentUserId();
+        if (userIdOpt.isEmpty()) {
+            return unauthorized("Usuario no autenticado o perfil no encontrado");
+        }
+        var histories = queryService.handle(new GetIoTMonitoringHistoriesByBatchIdQuery(batchId));
+        var resources = histories.stream()
+                .map(IoTMonitoringHistoryResourceFromEntityAssembler::toResourceFromEntity)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(resources);
+    }
+
     @PostMapping("/simulator/generate-reading")
     @Operation(summary = "Simula una lectura: genera valores en servidor y persiste historial")
-    public ResponseEntity<?> generateSimulatedReading() {
+    public ResponseEntity<?> generateSimulatedReading(@RequestParam(required = false) Long batchId) {
         Optional<Long> userIdOpt = resolveCurrentUserId();
         if (userIdOpt.isEmpty()) {
             return unauthorized("Usuario no autenticado o perfil no encontrado");
         }
         Long userId = userIdOpt.get();
         ensureDataEntityForUser(userId);
-        var readingOpt = commandService.simulateReading(userId);
+        var readingOpt = commandService.simulateReading(userId, batchId);
         if (readingOpt.isEmpty()) {
             return ResponseEntity.badRequest().body(new MessageResource("No se pudo generar la lectura simulada"));
         }

@@ -31,6 +31,9 @@ public class IoTMonitoringHistory {
     @JoinColumn(name = "iotMonitoringDataId", nullable = false)
     private IoTMonitoringData iotMonitoringData;
 
+    @Column(name = "batch_id", nullable = true)
+    private Long batchId;
+
     public IoTMonitoringHistory() {}
 
     public IoTMonitoringHistory(CreateIoTMonitoringHistoryCommand command, IoTMonitoringData iotMonitoringData) {
@@ -39,5 +42,6 @@ public class IoTMonitoringHistory {
         this.humidity = command.humidity();
         this.timestamp = command.timestamp() != null ? command.timestamp() : LocalDateTime.now();
         this.iotMonitoringData = iotMonitoringData;
+        this.batchId = command.batchId();
     }
 }

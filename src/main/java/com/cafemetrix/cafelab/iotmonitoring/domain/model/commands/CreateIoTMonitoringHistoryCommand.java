@@ -7,6 +7,7 @@ public record CreateIoTMonitoringHistoryCommand(
         boolean connectionState,
         double temperature,
         double humidity,
-        LocalDateTime timestamp
+        LocalDateTime timestamp,
+        Long batchId
 ) {
 }
