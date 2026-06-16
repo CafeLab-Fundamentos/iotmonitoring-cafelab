@@ -6,12 +6,14 @@ import com.cafemetrix.cafelab.iotmonitoring.domain.model.queries.GetIoTMonitorin
 import com.cafemetrix.cafelab.iotmonitoring.domain.services.IoTMonitoringCommandService;
 import com.cafemetrix.cafelab.iotmonitoring.domain.services.IoTMonitoringQueryService;
 import com.cafemetrix.cafelab.iotmonitoring.infrastructure.authorization.sfs.support.CurrentProfileIdResolver;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.util.Optional;
 
@@ -21,20 +23,27 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest(IoTMonitoringController.class)
+@ExtendWith(MockitoExtension.class)
 class IoTMonitoringControllerTest {
 
-    @Autowired
     private MockMvc mockMvc;
 
-    @MockBean
+    @Mock
     private IoTMonitoringCommandService commandService;
 
-    @MockBean
+    @Mock
     private IoTMonitoringQueryService queryService;
 
-    @MockBean
+    @Mock
     private CurrentProfileIdResolver currentProfileIdResolver;
+
+    @BeforeEach
+    void setUp() {
+        var controller = new IoTMonitoringController(commandService, queryService, currentProfileIdResolver);
+        mockMvc = MockMvcBuilders.standaloneSetup(controller)
+                .setControllerAdvice(new IoTMonitoringExceptionHandler())
+                .build();
+    }
 
     @Test
     void shouldGetIoTMonitoringData() throws Exception {
