@@ -1,6 +1,5 @@
 package com.cafemetrix.cafelab.monitoring.interfaces.rest;
 
-import com.cafemetrix.cafelab.monitoring.domain.exceptions.EnvironmentThresholdNotFoundException;
 import com.cafemetrix.cafelab.monitoring.domain.model.aggregates.EnvironmentThreshold;
 import com.cafemetrix.cafelab.monitoring.domain.model.commands.CreateEnvironmentThresholdCommand;
 import com.cafemetrix.cafelab.monitoring.domain.model.queries.GetEnvironmentThresholdByCoffeeLotIdQuery;
@@ -74,13 +73,26 @@ class EnvironmentThresholdsControllerTest {
     }
 
     @Test
-    void shouldReturnNotFoundWhenThresholdDoesNotExist() throws Exception {
+    void shouldCreateDefaultThresholdWhenThresholdDoesNotExist() throws Exception {
+        var threshold = new EnvironmentThreshold(new CreateEnvironmentThresholdCommand(
+                99L,
+                18.0,
+                22.0,
+                55.0,
+                65.0,
+                5));
+
         when(thresholdQueryService.handle(any(GetEnvironmentThresholdByCoffeeLotIdQuery.class))).thenReturn(Optional.empty());
+        when(thresholdCommandService.handle(any(CreateEnvironmentThresholdCommand.class))).thenReturn(Optional.of(threshold));
 
         mockMvc.perform(get("/api/v1/environment-thresholds/coffee-lot/99")
                         .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.message")
-                        .value(new EnvironmentThresholdNotFoundException(99L).getMessage()));
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.coffeeLotId").value(99))
+                .andExpect(jsonPath("$.minTemperature").value(18.0))
+                .andExpect(jsonPath("$.maxTemperature").value(22.0))
+                .andExpect(jsonPath("$.minHumidity").value(55.0))
+                .andExpect(jsonPath("$.maxHumidity").value(65.0))
+                .andExpect(jsonPath("$.syncIntervalSeconds").value(5));
     }
 }

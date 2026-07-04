@@ -1,6 +1,7 @@
 package com.cafemetrix.cafelab.monitoring.interfaces.rest;
 
 import com.cafemetrix.cafelab.monitoring.domain.exceptions.EnvironmentThresholdNotFoundException;
+import com.cafemetrix.cafelab.monitoring.domain.model.aggregates.EnvironmentThreshold;
 import com.cafemetrix.cafelab.monitoring.domain.model.commands.CreateEnvironmentThresholdCommand;
 import com.cafemetrix.cafelab.monitoring.domain.model.commands.UpdateEnvironmentThresholdCommand;
 import com.cafemetrix.cafelab.monitoring.domain.model.queries.GetEnvironmentThresholdByCoffeeLotIdQuery;
@@ -25,6 +26,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping(value = "/api/v1/environment-thresholds", produces = MediaType.APPLICATION_JSON_VALUE)
 @Tag(name = "Environment Thresholds", description = "Management endpoints for IoT sensor safe thresholds per coffee lot")
 public class EnvironmentThresholdsController {
+
+    private static final double DEFAULT_MIN_TEMPERATURE = 18.0;
+    private static final double DEFAULT_MAX_TEMPERATURE = 22.0;
+    private static final double DEFAULT_MIN_HUMIDITY = 55.0;
+    private static final double DEFAULT_MAX_HUMIDITY = 65.0;
+    private static final int DEFAULT_SYNC_INTERVAL_SECONDS = 5;
 
     private final EnvironmentThresholdCommandService thresholdCommandService;
     private final EnvironmentThresholdQueryService thresholdQueryService;
@@ -61,11 +68,21 @@ public class EnvironmentThresholdsController {
         var query = new GetEnvironmentThresholdByCoffeeLotIdQuery(coffeeLotId);
         var threshold = thresholdQueryService.handle(query);
 
-        if (threshold.isEmpty()) {
-            throw new EnvironmentThresholdNotFoundException(coffeeLotId);
-        }
+        var existingOrDefault = threshold.orElseGet(() -> createDefaultThreshold(coffeeLotId));
+        return ResponseEntity.ok(EnvironmentThresholdResourceFromEntityAssembler.toResourceFromEntity(existingOrDefault));
+    }
 
-        return ResponseEntity.ok(EnvironmentThresholdResourceFromEntityAssembler.toResourceFromEntity(threshold.get()));
+    private EnvironmentThreshold createDefaultThreshold(Long coffeeLotId) {
+        var command = new CreateEnvironmentThresholdCommand(
+                coffeeLotId,
+                DEFAULT_MIN_TEMPERATURE,
+                DEFAULT_MAX_TEMPERATURE,
+                DEFAULT_MIN_HUMIDITY,
+                DEFAULT_MAX_HUMIDITY,
+                DEFAULT_SYNC_INTERVAL_SECONDS);
+        return thresholdCommandService
+                .handle(command)
+                .orElseThrow(() -> new IllegalStateException("No se pudo registrar la configuracion de umbrales"));
     }
 
     @PutMapping(value = "/coffee-lot/{coffeeLotId}", consumes = MediaType.APPLICATION_JSON_VALUE)
