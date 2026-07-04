@@ -76,10 +76,10 @@ class EnvironmentThresholdsControllerTest {
     void shouldCreateDefaultThresholdWhenThresholdDoesNotExist() throws Exception {
         var threshold = new EnvironmentThreshold(new CreateEnvironmentThresholdCommand(
                 99L,
-                18.0,
-                22.0,
-                55.0,
-                65.0,
+                0.0,
+                150.0,
+                0.0,
+                150.0,
                 5));
 
         when(thresholdQueryService.handle(any(GetEnvironmentThresholdByCoffeeLotIdQuery.class))).thenReturn(Optional.empty());
@@ -89,10 +89,10 @@ class EnvironmentThresholdsControllerTest {
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.coffeeLotId").value(99))
-                .andExpect(jsonPath("$.minTemperature").value(18.0))
-                .andExpect(jsonPath("$.maxTemperature").value(22.0))
-                .andExpect(jsonPath("$.minHumidity").value(55.0))
-                .andExpect(jsonPath("$.maxHumidity").value(65.0))
+                .andExpect(jsonPath("$.minTemperature").value(0.0))
+                .andExpect(jsonPath("$.maxTemperature").value(150.0))
+                .andExpect(jsonPath("$.minHumidity").value(0.0))
+                .andExpect(jsonPath("$.maxHumidity").value(150.0))
                 .andExpect(jsonPath("$.syncIntervalSeconds").value(5));
     }
 }

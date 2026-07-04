@@ -27,10 +27,10 @@ import org.springframework.web.bind.annotation.RestController;
 @Tag(name = "Environment Thresholds", description = "Management endpoints for IoT sensor safe thresholds per coffee lot")
 public class EnvironmentThresholdsController {
 
-    private static final double DEFAULT_MIN_TEMPERATURE = 18.0;
-    private static final double DEFAULT_MAX_TEMPERATURE = 22.0;
-    private static final double DEFAULT_MIN_HUMIDITY = 55.0;
-    private static final double DEFAULT_MAX_HUMIDITY = 65.0;
+    private static final double DEFAULT_MIN_TEMPERATURE = 0.0;
+    private static final double DEFAULT_MAX_TEMPERATURE = 150.0;
+    private static final double DEFAULT_MIN_HUMIDITY = 0.0;
+    private static final double DEFAULT_MAX_HUMIDITY = 150.0;
     private static final int DEFAULT_SYNC_INTERVAL_SECONDS = 5;
 
     private final EnvironmentThresholdCommandService thresholdCommandService;
